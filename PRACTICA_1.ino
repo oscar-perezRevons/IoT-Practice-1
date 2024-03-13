@@ -1,7 +1,32 @@
 int DISTANCIA = 0;
-int pinLed = 22;
 int pinEco = 18;
+int pinLed=1;
 int pinGatillo = 19;
+class LED
+{
+  private:
+    int numero;
+  public:
+    int getnumero()
+    {
+      return numero;
+    }
+    void setnumero(int n)
+    {
+      numero=n;
+    }
+    LED(int n)
+    {
+      numero=n;
+    }
+    void encender(){
+      digitalWrite(numero, HIGH);
+    }
+
+    void apagar() {
+      digitalWrite(numero, LOW);
+    }
+};
 long readUltrasonicDistance(int triggerPin, int echoPin)
 {
   //Iniciamos el pin del emisor de reuido en salida
@@ -21,25 +46,34 @@ long readUltrasonicDistance(int triggerPin, int echoPin)
   // Calculamos el tiempo que tardo en regresar el sonido
   return pulseIn(echoPin, HIGH);
 }
+LED L1(1);
 
 void setup() {
-  Serial.begin(9600);
+  
   //Configuramos el pin del led como salida
-  pinMode(pinLed, OUTPUT);
+  
+  pinMode(1, OUTPUT);
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
 }
 
 void loop() {
   //Calculamos la distancia en cm
   DISTANCIA = 0.01723 * readUltrasonicDistance(pinGatillo, pinEco);
   //Mostramos la disstancia
-  Serial.println(DISTANCIA);
+   L1.setnumero(0);
   //Si la distancia es menor a 20 encendemos el led
-  if (DISTANCIA < 20) {
-    digitalWrite(pinLed, HIGH);
-  } 
-  //Si la distancia es mayor a 20 apagamos el led
-  else {
-    digitalWrite(pinLed, LOW);
-  }
+  while(L1.getnumero()!=3)
+    {
+        L1.setnumero(L1.getnumero()+1);
+        if (DISTANCIA > 0 && DISTANCIA <= 10 && L1.getnumero() == 3) { continue; }
+        if (DISTANCIA > 10 && DISTANCIA <= 20 && L1.getnumero() == 2) { continue; }
+        if (DISTANCIA > 20 && DISTANCIA <= 30 && L1.getnumero() == 1) { continue; }
+        L1.encender();
+        //digitalWrite(i, HIGH);
+        delay(230);
+        //digitalWrite(i, LOW);
+        L1.apagar();
+    }
   delay(100);
 }
